@@ -1,29 +1,27 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from '../components/ProtectedRoute'
+import { Landing } from '../pages/Landing'
 import { Login } from '../pages/Login'
 import Home from '../pages/Home'
 import About from '../pages/About'
+import { useAuth } from '../contexts/AuthContext'
 
 export function AppRoutes() {
+  const { user } = useAuth()
+
   return (
     <Routes>
+      <Route path="/" element={user ? <Navigate to="/app" /> : <Landing />} />
       <Route path="/login" element={<Login />} />
       <Route
-        path="/"
+        path="/app"
         element={
           <ProtectedRoute>
             <Home />
           </ProtectedRoute>
         }
       />
-      <Route
-        path="/about"
-        element={
-          <ProtectedRoute>
-            <About />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/about" element={<About />} />
     </Routes>
   )
 } 
