@@ -10,7 +10,8 @@ import {
   deleteDoc,
   doc,
   orderBy,
-  QueryConstraint
+  QueryConstraint,
+  getDoc
 } from 'firebase/firestore';
 import { Graph } from '../types/graph';
 import { matrixHelpers } from '../utils/matrixHelpers';
@@ -95,5 +96,29 @@ export const graphService = {
       console.error('Graf silinirken hata:', error);
       throw error;
     }
-  }
+  },
+
+  // Graf detaylarını getirme
+  async getGraph(graphId: string): Promise<Graph | null> {
+    try {
+      const docRef = doc(db, 'graphs', graphId);
+      const docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        return null;
+      }
+
+      const data = docSnap.data();
+      return {
+        id: docSnap.id,
+        ...data,
+        matrix: matrixHelpers.decompressMatrix(data.matrix, data.size),
+        createdAt: data.createdAt.toDate(),
+        updatedAt: data.updatedAt.toDate()
+      } as Graph;
+    } catch (error) {
+      console.error('Graf detayları getirilirken hata:', error);
+      throw error;
+    }
+  },
 }; 
