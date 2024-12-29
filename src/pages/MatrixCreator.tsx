@@ -54,7 +54,7 @@ function MatrixCreator() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col gap-4">
       {/* Header */}
       <div className="border-b pb-4">
         <h1 className="text-3xl font-bold text-gray-900">
@@ -66,8 +66,8 @@ function MatrixCreator() {
       </div>
 
       {/* Controls Section */}
-      <div className="space-y-6">
-        <div className="bg-gray-50 p-4 rounded-lg">
+      <div className="flex gap-4">
+        <div className="bg-gray-50 p-4 rounded-lg flex-1">
           <h2 className="text-lg font-semibold text-gray-700 mb-4">
             Graf Özellikleri
           </h2>
