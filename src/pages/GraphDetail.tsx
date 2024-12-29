@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { graphService } from '../services/firebase';
-import { Graph } from '../types/graph';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { graphService } from "../services/firebase";
+import { Graph } from "../types/graph";
+import { GraphHeader } from "../components/graph-detail/GraphHeader";
+import { GraphProperties } from "../components/graph-detail/GraphProperties";
+import { MatrixView } from "../components/graph-detail/MatrixView";
 
 export function GraphDetail() {
   const { graphId } = useParams();
@@ -10,23 +13,26 @@ export function GraphDetail() {
   const { user } = useAuth();
   const [graph, setGraph] = useState<Graph | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedGraph, setEditedGraph] = useState<Graph | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const loadGraph = async () => {
       try {
         if (!graphId || !user) return;
         const graphData = await graphService.getGraph(graphId);
-        
+
         // Eğer graf bulunamadıysa veya başka bir kullanıcıya aitse ana sayfaya yönlendir
         if (!graphData || graphData.userId !== user.uid) {
-          navigate('/app');
+          navigate("/app");
           return;
         }
-        
+
         setGraph(graphData);
       } catch (error) {
-        console.error('Graf yüklenirken hata:', error);
-        navigate('/app');
+        console.error("Graf yüklenirken hata:", error);
+        navigate("/app");
       } finally {
         setLoading(false);
       }
@@ -34,6 +40,87 @@ export function GraphDetail() {
 
     loadGraph();
   }, [graphId, user, navigate]);
+
+  const handleEdit = () => {
+    setEditedGraph(graph);
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setEditedGraph(null);
+    setIsEditing(false);
+  };
+
+  const handleSave = async () => {
+    if (!editedGraph || !graphId) return;
+
+    try {
+      setIsSaving(true);
+      await graphService.update(graphId, {
+        name: editedGraph.name,
+        matrix: editedGraph.matrix,
+        isDirected: editedGraph.isDirected,
+        isWeighted: editedGraph.isWeighted,
+        allowSelfLoops: editedGraph.allowSelfLoops,
+      });
+
+      setGraph(editedGraph);
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Graf güncellenirken hata:", error);
+      alert("Graf güncellenirken bir hata oluştu.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleMatrixChange = (row: number, col: number, value: string) => {
+    if (!editedGraph) return;
+
+    const newMatrix = [...editedGraph.matrix];
+    const newValue = parseInt(value);
+
+    if (isNaN(newValue) || newValue < 0) return;
+    if (!editedGraph.isWeighted && newValue > 1) return;
+
+    newMatrix[row][col] = newValue;
+    if (!editedGraph.isDirected && row !== col) {
+      newMatrix[col][row] = newValue;
+    }
+
+    setEditedGraph({
+      ...editedGraph,
+      matrix: newMatrix,
+    });
+  };
+
+  const handleSizeChange = (newSize: number) => {
+    if (!editedGraph) return;
+
+    // Yeni boyutta boş matris oluştur
+    const newMatrix = Array(newSize)
+      .fill(0)
+      .map(() => Array(newSize).fill(0));
+
+    // Mevcut matristen değerleri kopyala
+    const minSize = Math.min(editedGraph.size, newSize);
+    for (let i = 0; i < minSize; i++) {
+      for (let j = 0; j < minSize; j++) {
+        newMatrix[i][j] = editedGraph.matrix[i][j];
+      }
+    }
+
+    setEditedGraph({
+      ...editedGraph,
+      size: newSize,
+      matrix: newMatrix,
+    });
+  };
+
+  const handleGraphChange = (updates: Partial<Graph>) => {
+    if (!editedGraph) return;
+    setEditedGraph({ ...editedGraph, ...updates });
+  };
 
   if (loading) {
     return <div className="text-center py-8">Yükleniyor...</div>;
@@ -43,47 +130,42 @@ export function GraphDetail() {
     return null;
   }
 
+  const displayGraph = isEditing ? editedGraph : graph;
+  if (!displayGraph) return null;
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">{graph.name}</h1>
-        <div className="mt-2 text-sm text-gray-500">
-          Oluşturulma: {new Date(graph.createdAt).toLocaleDateString()}
-        </div>
-      </div>
+      <GraphHeader
+        name={displayGraph.name}
+        createdAt={displayGraph.createdAt}
+        isEditing={isEditing}
+        isSaving={isSaving}
+        onEdit={handleEdit}
+        onCancel={handleCancel}
+        onSave={handleSave}
+        onNameChange={(name) => handleGraphChange({ name })}
+      />
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Graf Özellikleri */}
-        <div className="bg-gray-50 rounded-lg p-4">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Graf Özellikleri</h2>
-          <div className="space-y-2">
-            <p>Boyut: {graph.size}x{graph.size}</p>
-            <p>Tip: {graph.isDirected ? 'Yönlü' : 'Yönsüz'}</p>
-            <p>Ağırlıklı: {graph.isWeighted ? 'Evet' : 'Hayır'}</p>
-            <p>Kendi Kendine Bağlantı: {graph.allowSelfLoops ? 'İzin Veriliyor' : 'İzin Verilmiyor'}</p>
-          </div>
-        </div>
+      <div
+        className={`${
+          isEditing ? "flex flex-col gap-4" : "grid grid-cols-1 md:grid-cols-2 gap-4"
+        }`}
+      >
+        <GraphProperties
+          graph={displayGraph}
+          isEditing={isEditing}
+          onGraphChange={handleGraphChange}
+          onSizeChange={handleSizeChange}
+        />
 
-        {/* Matris Görünümü */}
-        <div className="bg-gray-50 rounded-lg p-4">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Komşuluk Matrisi</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <tbody className="bg-white divide-y divide-gray-200">
-                {graph.matrix.map((row, i) => (
-                  <tr key={i}>
-                    {row.map((cell, j) => (
-                      <td key={j} className="px-4 py-2 text-center border">
-                        {cell}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <MatrixView
+          matrix={displayGraph.matrix}
+          isEditing={isEditing}
+          isWeighted={displayGraph.isWeighted}
+          allowSelfLoops={displayGraph.allowSelfLoops}
+          onCellChange={handleMatrixChange}
+        />
       </div>
     </div>
   );
-} 
+}
