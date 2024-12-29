@@ -10,9 +10,9 @@ export function Layout({ children }: LayoutProps) {
   const isLoginPage = location.pathname === '/login'
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="h-screen hidden-scrollbar overflow-y-auto bg-gray-100">
       {!isLoginPage && <Navigation />}
-      <main className={isLoginPage ? '' : 'max-w-7xl mx-auto p-4'}>
+      <main className={isLoginPage ? '' : 'max-w-7xl mx-auto py-8 px-4'}>
         {children}
       </main>
     </div>

@@ -38,7 +38,7 @@ function Home() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="flex flex-col gap-4">
       {/* Üst Bölüm - Matris Oluşturucu Butonu */}
       <div className="bg-white rounded-lg shadow-lg p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Yeni Graf Oluştur</h2>
