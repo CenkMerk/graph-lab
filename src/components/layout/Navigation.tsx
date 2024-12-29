@@ -29,6 +29,13 @@ export function Navigation() {
                 Hakkında
               </Link>
             </li>
+            {user && (
+              <li>
+                <Link to="/my-graphs" className="text-gray-700 hover:text-gray-900 font-medium">
+                  Graflarım
+                </Link>
+              </li>
+            )}
           </ul>
           <div className="flex items-center gap-4">
             {user ? (

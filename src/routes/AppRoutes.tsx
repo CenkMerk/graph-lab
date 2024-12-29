@@ -5,6 +5,7 @@ import { Login } from '../pages/Login'
 import Home from '../pages/Home'
 import About from '../pages/About'
 import { useAuth } from '../contexts/AuthContext'
+import { MyGraphs } from '../pages/MyGraphs'
 
 export function AppRoutes() {
   const { user } = useAuth()
@@ -22,6 +23,14 @@ export function AppRoutes() {
         }
       />
       <Route path="/about" element={<About />} />
+      <Route
+        path="/my-graphs"
+        element={
+          <ProtectedRoute>
+            <MyGraphs />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   )
 } 
