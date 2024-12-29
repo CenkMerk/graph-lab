@@ -1,154 +1,96 @@
-import { useState } from 'react';
-import { useMatrix } from "../hooks/useMatrix";
-import { GraphControls } from "../components/controls/GraphControls";
-import { MatrixInput } from "../components/matrix/MatrixInput";
-import { SizeInput } from "../components/matrix/SizeInput";
-import { MatrixInfo } from "../components/matrix/MatrixInfo";
+import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { graphService } from '../services/firebase';
+import { Graph } from '../types/graph';
 
 function Home() {
-  const {
-    size,
-    matrix,
-    isDirected,
-    allowSelfLoops,
-    isWeighted,
-    handleSizeChange,
-    handleMatrixChange,
-    setIsDirected,
-    setAllowSelfLoops,
-    setIsWeighted,
-  } = useMatrix({ initialSize: 3 });
-
   const { user } = useAuth();
-  const [graphName, setGraphName] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
+  const [graphs, setGraphs] = useState<Graph[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleSave = async () => {
-    if (!user) {
-      console.error('Kullanıcı oturum açmamış!');
-      return;
-    }
-    
+  useEffect(() => {
+    const loadGraphs = async () => {
+      try {
+        if (!user) return;
+        const userGraphs = await graphService.getUserGraphs(user.uid);
+        setGraphs(userGraphs);
+      } catch (error) {
+        console.error('Graflar yüklenirken hata:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadGraphs();
+  }, [user]);
+
+  const handleDelete = async (graphId: string) => {
+    if (!confirm('Bu grafı silmek istediğinizden emin misiniz?')) return;
+
     try {
-      setIsSaving(true);
-      await graphService.create({
-        userId: user.uid,
-        name: graphName || `Graf ${new Date().toLocaleString()}`,
-        matrix,
-        size,
-        isDirected,
-        isWeighted,
-        allowSelfLoops
-      });
-      
-      setGraphName('');
-      alert('Graf başarıyla kaydedildi!');
+      await graphService.delete(graphId);
+      setGraphs(graphs.filter(g => g.id !== graphId));
     } catch (error) {
-      console.error('Graf kaydedilirken hata:', error);
-      alert('Graf kaydedilirken bir hata oluştu.');
-    } finally {
-      setIsSaving(false);
+      console.error('Graf silinirken hata:', error);
+      alert('Graf silinirken bir hata oluştu.');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="bg-white rounded-lg shadow-lg p-6 space-y-8">
-          {/* Header */}
-          <div className="border-b pb-4">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Komşuluk Matrisi Oluşturucu
-            </h1>
-            <p className="mt-2 text-gray-600">
-              Graf özelliklerini seçin ve matris değerlerini girin
-            </p>
+    <div className="space-y-8">
+      {/* Üst Bölüm - Matris Oluşturucu Butonu */}
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Yeni Graf Oluştur</h2>
+        <p className="text-gray-600 mb-4">
+          Komşuluk matrisi kullanarak yeni bir graf oluşturun.
+        </p>
+        <Link
+          to="/matrix-creator"
+          className="inline-block px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+        >
+          Komşuluk Matrisi Oluşturucu
+        </Link>
+      </div>
+
+      {/* Alt Bölüm - Graf Listesi */}
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Graflarım</h2>
+        
+        {loading ? (
+          <div className="text-center py-8">Yükleniyor...</div>
+        ) : graphs.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            Henüz hiç graf oluşturmadınız.
           </div>
-
-          {/* Controls Section */}
-          <div className="space-y-6">
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h2 className="text-lg font-semibold text-gray-700 mb-4">
-                Graf Özellikleri
-              </h2>
-              <GraphControls
-                isDirected={isDirected}
-                allowSelfLoops={allowSelfLoops}
-                isWeighted={isWeighted}
-                onDirectedChange={setIsDirected}
-                onSelfLoopsChange={setAllowSelfLoops}
-                onWeightedChange={setIsWeighted}
-              />
-            </div>
-
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h2 className="text-lg font-semibold text-gray-700 mb-4">
-                Matris Boyutu
-              </h2>
-              <SizeInput size={size} onSizeChange={handleSizeChange} />
-            </div>
-          </div>
-
-          {/* Matrix Section */}
-          {size > 0 && (
-            <div className="space-y-6">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h2 className="text-lg font-semibold text-gray-700 mb-4">
-                  Matris Değerleri
-                </h2>
-                <div className="flex justify-center">
-                  <MatrixInput
-                    matrix={matrix}
-                    isWeighted={isWeighted}
-                    allowSelfLoops={allowSelfLoops}
-                    onCellChange={handleMatrixChange}
-                  />
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {graphs.map((graph) => (
+              <div
+                key={graph.id}
+                className="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow"
+              >
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {graph.name}
+                </h3>
+                <div className="text-sm text-gray-500 space-y-1">
+                  <p>Boyut: {graph.size}x{graph.size}</p>
+                  <p>Tip: {graph.isDirected ? 'Yönlü' : 'Yönsüz'}</p>
+                  <p>Ağırlıklı: {graph.isWeighted ? 'Evet' : 'Hayır'}</p>
+                  <p>Oluşturulma: {new Date(graph.createdAt).toLocaleDateString()}</p>
                 </div>
-                <div className="mt-4">
-                  <MatrixInfo
-                    allowSelfLoops={allowSelfLoops}
-                    isDirected={isDirected}
-                    isWeighted={isWeighted}
-                  />
+                <div className="mt-4 flex justify-end">
+                  <button
+                    onClick={() => handleDelete(graph.id!)}
+                    className="text-red-600 hover:text-red-800"
+                  >
+                    Sil
+                  </button>
                 </div>
               </div>
-
-              {/* Graf İsmi Input */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h2 className="text-lg font-semibold text-gray-700 mb-4">
-                  Graf İsmi
-                </h2>
-                <input
-                  type="text"
-                  value={graphName}
-                  onChange={(e) => setGraphName(e.target.value)}
-                  placeholder="Graf ismi (opsiyonel)"
-                  className="w-full p-2 border rounded-md"
-                />
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex justify-end space-x-4">
-                <button
-                  onClick={() => window.location.reload()}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-                >
-                  Sıfırla
-                </button>
-                <button
-                  onClick={handleSave}
-                  disabled={isSaving}
-                  className={`px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 
-                    ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  {isSaving ? 'Kaydediliyor...' : 'Kaydet'}
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

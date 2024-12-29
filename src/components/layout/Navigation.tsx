@@ -19,14 +19,24 @@ export function Navigation() {
             </li>
 
             {user && (
-              <li>
-                <Link
-                  to="/my-graphs"
-                  className="text-gray-700 hover:text-gray-900 font-medium"
-                >
-                  Graflarım
-                </Link>
-              </li>
+              <>
+                <li>
+                  <Link
+                    to="/matrix-creator"
+                    className="text-gray-700 hover:text-gray-900 font-medium"
+                  >
+                    Matris Oluşturucu
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/my-graphs"
+                    className="text-gray-700 hover:text-gray-900 font-medium"
+                  >
+                    Graflarım
+                  </Link>
+                </li>
+              </>
             )}
           </ul>
           <div className="flex items-center gap-4">
