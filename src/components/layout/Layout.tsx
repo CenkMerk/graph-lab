@@ -15,7 +15,7 @@ export function Layout({ children }: LayoutProps) {
       {!isLoginPage && <Navigation />}
       <main
         className={
-          isLoginPage ? "" : `${user ? "max-w-7xl mx-auto py-8 px-4" : ""}`
+          isLoginPage ? "" : `${user ? "max-w-7xl w-full mx-auto py-8 px-4" : ""}`
         }
       >
         {children}
