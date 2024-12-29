@@ -1,56 +1,22 @@
-import { useState, useEffect } from "react";
+import { useMatrix } from "../hooks/useMatrix";
 import { GraphControls } from "../components/controls/GraphControls";
 import { MatrixInput } from "../components/matrix/MatrixInput";
 import { SizeInput } from "../components/matrix/SizeInput";
 import { MatrixInfo } from "../components/matrix/MatrixInfo";
 
 function Home() {
-  const [size, setSize] = useState<number>(3);
-  const [matrix, setMatrix] = useState<number[][]>([]);
-  const [isDirected, setIsDirected] = useState<boolean>(false);
-  const [allowSelfLoops, setAllowSelfLoops] = useState<boolean>(false);
-  const [isWeighted, setIsWeighted] = useState<boolean>(false);
-
-  useEffect(() => {
-    const initialMatrix = Array(3)
-      .fill(0)
-      .map(() => Array(3).fill(0));
-    setMatrix(initialMatrix);
-  }, []);
-
-  const handleSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newSize = parseInt(event.target.value) || 3;
-    setSize(newSize);
-
-    const newMatrix = Array(newSize)
-      .fill(0)
-      .map(() => Array(newSize).fill(0));
-    setMatrix(newMatrix);
-  };
-
-  const handleMatrixChange = (row: number, col: number, value: string) => {
-    if (row === col && !allowSelfLoops) {
-      return;
-    }
-
-    const newValue = parseInt(value);
-    if (isNaN(newValue) || newValue < 0) {
-      return;
-    }
-
-    if (!isWeighted && value !== "0" && value !== "1") {
-      return;
-    }
-
-    const newMatrix = [...matrix];
-    newMatrix[row][col] = newValue;
-    
-    if (!isDirected && row !== col) {
-      newMatrix[col][row] = newValue;
-    }
-
-    setMatrix(newMatrix);
-  };
+  const {
+    size,
+    matrix,
+    isDirected,
+    allowSelfLoops,
+    isWeighted,
+    handleSizeChange,
+    handleMatrixChange,
+    setIsDirected,
+    setAllowSelfLoops,
+    setIsWeighted,
+  } = useMatrix({ initialSize: 3 });
 
   const handleSave = () => {
     console.log('Komşuluk Matrisi:');
