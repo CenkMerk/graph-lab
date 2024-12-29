@@ -60,7 +60,7 @@ function MatrixCreator() {
           {/* Header */}
           <div className="border-b pb-4">
             <h1 className="text-3xl font-bold text-gray-900">
-              Komşuluk Matrisi Oluşturucu
+            Komşuluk Matrisinden Graf Oluşturma
             </h1>
             <p className="mt-2 text-gray-600">
               Graf özelliklerini seçin ve matris değerlerini girin
@@ -124,7 +124,7 @@ function MatrixCreator() {
                   type="text"
                   value={graphName}
                   onChange={(e) => setGraphName(e.target.value)}
-                  placeholder="Graf ismi (opsiyonel)"
+                  placeholder="Graf ismi"
                   className="w-full p-2 border rounded-md"
                 />
               </div>
@@ -139,9 +139,9 @@ function MatrixCreator() {
                 </button>
                 <button
                   onClick={handleSave}
-                  disabled={isSaving}
+                  disabled={isSaving || !graphName}
                   className={`px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 
-                    ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    ${isSaving || !graphName ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {isSaving ? 'Kaydediliyor...' : 'Kaydet'}
                 </button>
