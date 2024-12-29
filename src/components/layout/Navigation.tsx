@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom'
-import { useAuth } from '../../contexts/AuthContext'
+import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 export function Navigation() {
-  const { user, signOut } = useAuth()
+  const { user, signOut } = useAuth();
 
   return (
     <nav className="bg-white shadow-md">
@@ -10,28 +10,20 @@ export function Navigation() {
         <div className="flex justify-between h-16">
           <ul className="flex items-center gap-6">
             <li>
-              <Link 
-                to={user ? "/app" : "/"} 
+              <Link
+                to={user ? "/app" : "/"}
                 className="text-gray-700 hover:text-gray-900 font-medium"
               >
                 Ana Sayfa
               </Link>
             </li>
+
             {user && (
               <li>
-                <Link to="/app" className="text-gray-700 hover:text-gray-900 font-medium">
-                  Uygulama
-                </Link>
-              </li>
-            )}
-            <li>
-              <Link to="/about" className="text-gray-700 hover:text-gray-900 font-medium">
-                Hakkında
-              </Link>
-            </li>
-            {user && (
-              <li>
-                <Link to="/my-graphs" className="text-gray-700 hover:text-gray-900 font-medium">
+                <Link
+                  to="/my-graphs"
+                  className="text-gray-700 hover:text-gray-900 font-medium"
+                >
                   Graflarım
                 </Link>
               </li>
@@ -60,5 +52,5 @@ export function Navigation() {
         </div>
       </div>
     </nav>
-  )
-} 
+  );
+}
