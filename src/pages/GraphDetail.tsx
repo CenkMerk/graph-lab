@@ -178,7 +178,10 @@ export function GraphDetail() {
               />
             </div>
             <div className="md:col-span-2">
-              <ResidualClosenessView matrix={displayGraph.matrix} />
+              <ResidualClosenessView 
+                matrix={displayGraph.matrix}
+                name={displayGraph.name}
+              />
             </div>
           </>
         )}

@@ -2,11 +2,15 @@ import { graphAlgorithms } from "../../utils/graphAlgorithms";
 
 interface ResidualClosenessViewProps {
   matrix: number[][];
+  name?: string;
 }
 
-export function ResidualClosenessView({ matrix }: ResidualClosenessViewProps) {
+export function ResidualClosenessView({ matrix, name = "G" }: ResidualClosenessViewProps) {
   const residualCloseness = graphAlgorithms.calculateResidualCloseness(matrix);
   const formattedValues = graphAlgorithms.formatResidualCloseness(residualCloseness);
+  
+  const totalCentrality = residualCloseness.reduce((sum, value) => sum + value, 0);
+  const formattedTotal = totalCentrality.toFixed(4);
 
   return (
     <div className="bg-gray-50 rounded-lg p-4">
@@ -31,6 +35,14 @@ export function ResidualClosenessView({ matrix }: ResidualClosenessViewProps) {
                 <td className="px-4 py-2 text-center border">{value}</td>
               </tr>
             ))}
+            <tr className="bg-gray-50 font-medium">
+              <td className="px-4 py-2 text-center border">
+                C({name})
+              </td>
+              <td className="px-4 py-2 text-center border">
+                {formattedTotal}
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
