@@ -96,5 +96,49 @@ export const graphAlgorithms = {
         cell === INF ? "∞" : cell.toString()
       )
     );
+  },
+
+  /**
+   * Residual Closeness merkeziyet değerlerini hesaplar
+   * @param matrix Komşuluk matrisi
+   * @returns Her düğüm için residual closeness değerleri
+   */
+  calculateResidualCloseness(matrix: number[][]): number[] {
+    const n = matrix.length;
+    const shortestPaths = this.floydWarshall(matrix);
+    const residualCloseness = new Array(n).fill(0);
+
+    // Her düğüm için residual closeness değerini hesapla
+    for (let i = 0; i < n; i++) {
+      let sum = 0;
+      for (let j = 0; j < n; j++) {
+        if (i !== j && shortestPaths[i][j] !== INF) {
+          // 2^(-d) formülünü uygula, d = en kısa yol uzunluğu
+          sum += Math.pow(2, -shortestPaths[i][j]);
+        }
+      }
+      residualCloseness[i] = sum;
+    }
+
+    return residualCloseness;
+  },
+
+  /**
+   * Residual Closeness değerlerini normalize eder (0-1 aralığına)
+   * @param values Residual Closeness değerleri
+   * @returns Normalize edilmiş değerler
+   */
+  normalizeResidualCloseness(values: number[]): number[] {
+    const max = Math.max(...values);
+    return values.map(v => v / max);
+  },
+
+  /**
+   * Residual Closeness değerlerini okunabilir formata dönüştürür
+   * @param values Residual Closeness değerleri
+   * @returns Formatlanmış değerler
+   */
+  formatResidualCloseness(values: number[]): string[] {
+    return values.map(v => v.toFixed(4));
   }
 }; 
