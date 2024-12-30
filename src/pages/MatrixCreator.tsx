@@ -6,8 +6,9 @@ import { SizeInput } from "../components/matrix/SizeInput";
 import { MatrixInfo } from "../components/matrix/MatrixInfo";
 import { useAuth } from "../contexts/AuthContext";
 import { graphService } from "../services/firebase";
-
+import { useNavigate } from "react-router-dom";
 function MatrixCreator() {
+  const navigate = useNavigate();
   const {
     size,
     matrix,
@@ -33,7 +34,7 @@ function MatrixCreator() {
 
     try {
       setIsSaving(true);
-      await graphService.create({
+      const graphId = await graphService.create({
         userId: user.uid,
         name: graphName || `Graf ${new Date().toLocaleString()}`,
         matrix,
@@ -45,6 +46,7 @@ function MatrixCreator() {
 
       setGraphName("");
       alert("Graf başarıyla kaydedildi!");
+      navigate(`/graph/${graphId}`);
     } catch (error) {
       console.error("Graf kaydedilirken hata:", error);
       alert("Graf kaydedilirken bir hata oluştu.");

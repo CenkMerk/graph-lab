@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { graphService } from '../services/firebase';
@@ -8,6 +8,7 @@ function Home() {
   const { user } = useAuth();
   const [graphs, setGraphs] = useState<Graph[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadGraphs = async () => {
@@ -68,7 +69,8 @@ function Home() {
             {graphs.map((graph) => (
               <div
                 key={graph.id}
-                className="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow"
+                className="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => navigate(`/graph/${graph.id}`)}
               >
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   {graph.name}
@@ -81,7 +83,10 @@ function Home() {
                 </div>
                 <div className="mt-4 flex justify-end">
                   <button
-                    onClick={() => handleDelete(graph.id!)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(graph.id!);
+                    }}
                     className="text-red-600 hover:text-red-800"
                   >
                     Sil

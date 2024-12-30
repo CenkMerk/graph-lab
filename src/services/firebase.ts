@@ -10,7 +10,9 @@ import {
   deleteDoc,
   doc,
   orderBy,
-  QueryConstraint
+  QueryConstraint,
+  getDoc,
+  updateDoc
 } from 'firebase/firestore';
 import { Graph } from '../types/graph';
 import { matrixHelpers } from '../utils/matrixHelpers';
@@ -95,5 +97,48 @@ export const graphService = {
       console.error('Graf silinirken hata:', error);
       throw error;
     }
-  }
+  },
+
+  // Graf detaylarını getirme
+  async getGraph(graphId: string): Promise<Graph | null> {
+    try {
+      const docRef = doc(db, 'graphs', graphId);
+      const docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        return null;
+      }
+
+      const data = docSnap.data();
+      return {
+        id: docSnap.id,
+        ...data,
+        matrix: matrixHelpers.decompressMatrix(data.matrix, data.size),
+        createdAt: data.createdAt.toDate(),
+        updatedAt: data.updatedAt.toDate()
+      } as Graph;
+    } catch (error) {
+      console.error('Graf detayları getirilirken hata:', error);
+      throw error;
+    }
+  },
+
+  // Graf güncelleme
+  async update(graphId: string, graphData: Partial<Omit<Graph, 'id' | 'createdAt' | 'userId'>>) {
+    try {
+      const docRef = doc(db, 'graphs', graphId);
+      
+      // Eğer matris güncelleniyorsa, sıkıştırılmış formata çevir
+      const updateData = {
+        ...graphData,
+        updatedAt: new Date(),
+        matrix: graphData.matrix ? matrixHelpers.compressMatrix(graphData.matrix) : undefined
+      };
+
+      await updateDoc(docRef, updateData);
+    } catch (error) {
+      console.error('Graf güncellenirken hata:', error);
+      throw error;
+    }
+  },
 }; 
