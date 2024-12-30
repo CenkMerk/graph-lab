@@ -7,6 +7,7 @@ import { GraphHeader } from "../components/graph-detail/GraphHeader";
 import { GraphProperties } from "../components/graph-detail/GraphProperties";
 import { MatrixView } from "../components/graph-detail/MatrixView";
 import { GraphVisualization } from "../components/graph-detail/GraphVisualization";
+import { ShortestPathsView } from "../components/graph-detail/ShortestPathsView";
 
 export function GraphDetail() {
   const { graphId } = useParams();
@@ -166,6 +167,15 @@ export function GraphDetail() {
           allowSelfLoops={displayGraph.allowSelfLoops}
           onCellChange={handleMatrixChange}
         />
+
+        {!isEditing && (
+          <div className="md:col-span-2">
+            <ShortestPathsView 
+              matrix={displayGraph.matrix} 
+              isWeighted={displayGraph.isWeighted}
+            />
+          </div>
+        )}
 
         <div className={isEditing ? "" : "md:col-span-2"}>
           <GraphVisualization
