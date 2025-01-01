@@ -25,11 +25,22 @@ export function ShortestPathsView({ matrix, isWeighted }: ShortestPathsViewProps
       </p>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
+          <thead>
+            <tr>
+              <th className="px-2 py-1 text-center border bg-gray-50"></th>
+              {formattedPaths[0].map((_, index) => (
+                <th key={index} className="px-2 py-1 text-center border bg-gray-50">
+                  {index + 1}
+                </th>
+              ))}
+            </tr>
+          </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {formattedPaths.map((row, i) => (
               <tr key={i}>
+                <th className="px-2 py-1 text-center border bg-gray-50">{i + 1}</th>
                 {row.map((cell, j) => (
-                  <td key={j} className="px-4 py-2 text-center border">
+                  <td key={j} className="px-2 py-1 text-center border">
                     {cell}
                   </td>
                 ))}
