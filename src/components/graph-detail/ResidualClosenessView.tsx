@@ -12,8 +12,11 @@ export function ResidualClosenessView({ matrix, name = "G" }: ResidualClosenessV
   return (
     <div className="bg-gray-50 rounded-lg p-4">
       <h2 className="text-xl font-semibold text-gray-900 mb-4">
-        Residual Closeness Değerleri
+        Residual Closeness Değerleri (R(G))
       </h2>
+      <p className="text-sm text-gray-600 mb-4">
+        Her düğümün çıkarılması durumunda kalan grafın merkeziyet değerleri hesaplanır. R(G) değeri, minimum C<sub>k</sub> değerini temsil eder.
+      </p>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead>
