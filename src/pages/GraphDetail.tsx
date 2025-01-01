@@ -153,7 +153,9 @@ export function GraphDetail() {
 
       <div
         className={`${
-          isEditing ? "flex flex-col gap-4" : "grid grid-cols-1 md:grid-cols-2 gap-4"
+          isEditing
+            ? "flex flex-col gap-4"
+            : "grid grid-cols-1 md:grid-cols-2 gap-4"
         }`}
       >
         <GraphProperties
@@ -174,13 +176,13 @@ export function GraphDetail() {
         {!isEditing && (
           <>
             <div className="md:col-span-2">
-              <ShortestPathsView 
-                matrix={displayGraph.matrix} 
+              <ShortestPathsView
+                matrix={displayGraph.matrix}
                 isWeighted={displayGraph.isWeighted}
               />
             </div>
             <div className="md:col-span-2">
-              <ClosenessCentralityView 
+              <ClosenessCentralityView
                 matrix={displayGraph.matrix}
                 name={displayGraph.name}
               />
@@ -201,11 +203,16 @@ export function GraphDetail() {
         )}
 
         <div className={isEditing ? "" : "md:col-span-2"}>
-          <GraphVisualization
-            matrix={displayGraph.matrix}
-            isDirected={displayGraph.isDirected}
-            isWeighted={displayGraph.isWeighted}
-          />
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Graf Görünümü
+            </h2>
+            <GraphVisualization
+              matrix={displayGraph.matrix}
+              isDirected={displayGraph.isDirected}
+              isWeighted={displayGraph.isWeighted}
+            />
+          </div>
         </div>
       </div>
     </div>
