@@ -18,7 +18,7 @@ export function ClosenessCentralityView({ matrix, name = "G" }: ClosenessCentral
         Closeness Centrality Değerleri
       </h2>
       <p className="text-sm text-gray-600 mb-4">
-        Chavdar Dangalchev (2006) tarafından önerilen merkeziyet ölçüsü
+        Chavdar Dangalchev (2006) tarafından önerilen merkeziyet ölçüsü ile hesaplandı
       </p>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
