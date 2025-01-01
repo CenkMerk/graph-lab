@@ -6,7 +6,7 @@ import Home from '../pages/Home'
 import { useAuth } from '../contexts/AuthContext'
 import { MyGraphs } from '../pages/MyGraphs'
 import MatrixCreator from '../pages/MatrixCreator'
-import { GraphDetail } from '../pages/GraphDetail'
+import { GraphDetailContainer } from '../containers/GraphDetailContainer'
 
 export function AppRoutes() {
   const { user } = useAuth()
@@ -43,7 +43,7 @@ export function AppRoutes() {
         path="/graph/:graphId"
         element={
           <ProtectedRoute>
-            <GraphDetail />
+            <GraphDetailContainer />
           </ProtectedRoute>
         }
       />

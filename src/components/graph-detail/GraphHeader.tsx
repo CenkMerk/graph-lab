@@ -7,6 +7,7 @@ interface GraphHeaderProps {
   onCancel: () => void;
   onSave: () => void;
   onNameChange: (name: string) => void;
+  editable: boolean;
 }
 
 export function GraphHeader({
@@ -18,6 +19,7 @@ export function GraphHeader({
   onCancel,
   onSave,
   onNameChange,
+  editable,
 }: GraphHeaderProps) {
   return (
     <div className="mb-6 flex justify-between items-center">
@@ -58,6 +60,7 @@ export function GraphHeader({
           <button
             onClick={onEdit}
             className="px-4 py-2 text-blue-600 hover:text-blue-800"
+            disabled={!editable}
           >
             Düzenle
           </button>

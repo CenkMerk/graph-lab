@@ -1,7 +1,4 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import { graphService } from "../services/firebase";
+import { useState } from "react";
 import { Graph } from "../types/graph";
 import { GraphHeader } from "../components/graph-detail/GraphHeader";
 import { GraphProperties } from "../components/graph-detail/GraphProperties";
@@ -12,42 +9,19 @@ import { ClosenessCentralityView } from "../components/graph-detail/ClosenessCen
 import { ResidualClosenessView } from "../components/graph-detail/ResidualClosenessView";
 import { LineGraphView } from "../components/graph-detail/LineGraphView";
 
-export function GraphDetail() {
-  const { graphId } = useParams();
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const [graph, setGraph] = useState<Graph | null>(null);
-  const [loading, setLoading] = useState(true);
+interface GraphDetailProps {
+  graph: Graph;
+  onSave?: (updatedGraph: Graph) => Promise<void>;
+  editable?: boolean;
+}
+
+export function GraphDetail({ graph: initialGraph, onSave, editable = false }: GraphDetailProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedGraph, setEditedGraph] = useState<Graph | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    const loadGraph = async () => {
-      try {
-        if (!graphId || !user) return;
-        const graphData = await graphService.getGraph(graphId);
-
-        // Eğer graf bulunamadıysa veya başka bir kullanıcıya aitse ana sayfaya yönlendir
-        if (!graphData || graphData.userId !== user.uid) {
-          navigate("/app");
-          return;
-        }
-
-        setGraph(graphData);
-      } catch (error) {
-        console.error("Graf yüklenirken hata:", error);
-        navigate("/app");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadGraph();
-  }, [graphId, user, navigate]);
-
   const handleEdit = () => {
-    setEditedGraph(graph);
+    setEditedGraph(initialGraph);
     setIsEditing(true);
   };
 
@@ -57,19 +31,11 @@ export function GraphDetail() {
   };
 
   const handleSave = async () => {
-    if (!editedGraph || !graphId) return;
+    if (!editedGraph || !onSave) return;
 
     try {
       setIsSaving(true);
-      await graphService.update(graphId, {
-        name: editedGraph.name,
-        matrix: editedGraph.matrix,
-        isDirected: editedGraph.isDirected,
-        isWeighted: editedGraph.isWeighted,
-        allowSelfLoops: editedGraph.allowSelfLoops,
-      });
-
-      setGraph(editedGraph);
+      await onSave(editedGraph);
       setIsEditing(false);
     } catch (error) {
       console.error("Graf güncellenirken hata:", error);
@@ -127,15 +93,7 @@ export function GraphDetail() {
     setEditedGraph({ ...editedGraph, ...updates });
   };
 
-  if (loading) {
-    return <div className="text-center py-8">Yükleniyor...</div>;
-  }
-
-  if (!graph) {
-    return null;
-  }
-
-  const displayGraph = isEditing ? editedGraph : graph;
+  const displayGraph = isEditing ? editedGraph : initialGraph;
   if (!displayGraph) return null;
 
   return (
@@ -149,6 +107,7 @@ export function GraphDetail() {
         onCancel={handleCancel}
         onSave={handleSave}
         onNameChange={(name) => handleGraphChange({ name })}
+        editable={editable}
       />
 
       <div
