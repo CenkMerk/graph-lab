@@ -9,6 +9,7 @@ import { MatrixView } from "../components/graph-detail/MatrixView";
 import { GraphVisualization } from "../components/graph-detail/GraphVisualization";
 import { ShortestPathsView } from "../components/graph-detail/ShortestPathsView";
 import { ClosenessCentralityView } from "../components/graph-detail/ClosenessCentralityView";
+import { ResidualClosenessView } from "../components/graph-detail/ResidualClosenessView";
 
 export function GraphDetail() {
   const { graphId } = useParams();
@@ -179,6 +180,12 @@ export function GraphDetail() {
             </div>
             <div className="md:col-span-2">
               <ClosenessCentralityView 
+                matrix={displayGraph.matrix}
+                name={displayGraph.name}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <ResidualClosenessView
                 matrix={displayGraph.matrix}
                 name={displayGraph.name}
               />

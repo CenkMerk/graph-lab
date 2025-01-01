@@ -140,5 +140,61 @@ export const graphAlgorithms = {
    */
   formatClosenessCentrality(values: number[]): string[] {
     return values.map(v => v.toFixed(4));
+  },
+
+  /**
+   * Verilen düğüm çıkarıldığında kalan grafın Closeness Centrality değerlerini hesaplar
+   * @param matrix Komşuluk matrisi
+   * @param removedVertex Çıkarılacak düğüm indeksi
+   * @returns Kalan grafın Closeness Centrality değerleri
+   */
+  calculateResidualClosenessCentrality(matrix: number[][], removedVertex: number): number[] {
+    const n = matrix.length;
+    
+    // Yeni matris oluştur (k düğümü çıkarılmış hali)
+    const residualMatrix = matrix.map(row => [...row]);
+    // k. satır ve sütunu sıfırla
+    for (let i = 0; i < n; i++) {
+      residualMatrix[removedVertex][i] = 0;
+      residualMatrix[i][removedVertex] = 0;
+    }
+
+    // Kalan graf için closeness centrality hesapla
+    return this.calculateClosenessCentrality(residualMatrix);
+  },
+
+  /**
+   * Tüm Ck değerlerini hesaplar
+   * @param matrix Komşuluk matrisi
+   * @returns Her düğüm için Ck değerleri dizisi
+   */
+  calculateAllCkValues(matrix: number[][]): number[][] {
+    const n = matrix.length;
+    const ckValues: number[][] = [];
+
+    // Her düğüm için Ck değerlerini hesapla
+    for (let k = 0; k < n; k++) {
+      const ckValue = this.calculateResidualClosenessCentrality(matrix, k);
+      ckValues.push(ckValue);
+    }
+
+    return ckValues;
+  },
+
+  /**
+   * Residual Closeness değerini hesaplar (minimum Ck değeri)
+   * @param matrix Komşuluk matrisi
+   * @returns Residual Closeness değeri
+   */
+  calculateResidualCloseness(matrix: number[][]): number {
+    const ckValues = this.calculateAllCkValues(matrix);
+    
+    // Her Ck değeri için toplam hesapla
+    const ckSums = ckValues.map(ck => 
+      ck.reduce((sum, value) => sum + value, 0)
+    );
+    
+    // Minimum Ck toplamını bul
+    return Math.min(...ckSums);
   }
 }; 
