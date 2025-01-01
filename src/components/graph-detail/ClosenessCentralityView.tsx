@@ -1,21 +1,21 @@
 import { graphAlgorithms } from "../../utils/graphAlgorithms";
 
-interface ResidualClosenessViewProps {
+interface ClosenessCentralityViewProps {
   matrix: number[][];
   name?: string;
 }
 
-export function ResidualClosenessView({ matrix, name = "G" }: ResidualClosenessViewProps) {
-  const residualCloseness = graphAlgorithms.calculateResidualCloseness(matrix);
-  const formattedValues = graphAlgorithms.formatResidualCloseness(residualCloseness);
+export function ClosenessCentralityView({ matrix, name = "G" }: ClosenessCentralityViewProps) {
+  const closenessCentrality = graphAlgorithms.calculateClosenessCentrality(matrix);
+  const formattedValues = graphAlgorithms.formatClosenessCentrality(closenessCentrality);
   
-  const totalCentrality = residualCloseness.reduce((sum, value) => sum + value, 0);
+  const totalCentrality = closenessCentrality.reduce((sum, value) => sum + value, 0);
   const formattedTotal = totalCentrality.toFixed(4);
 
   return (
     <div className="bg-gray-50 rounded-lg p-4">
       <h2 className="text-xl font-semibold text-gray-900 mb-4">
-        Residual Closeness Merkeziyet Değerleri
+        Closeness Centrality Değerleri
       </h2>
       <p className="text-sm text-gray-600 mb-4">
         Chavdar Dangalchev (2006) tarafından önerilen merkeziyet ölçüsü

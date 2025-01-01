@@ -99,16 +99,16 @@ export const graphAlgorithms = {
   },
 
   /**
-   * Residual Closeness merkeziyet değerlerini hesaplar
+   * Closeness Centrality değerlerini hesaplar
    * @param matrix Komşuluk matrisi
-   * @returns Her düğüm için residual closeness değerleri
+   * @returns Her düğüm için Closeness Centrality değerleri
    */
-  calculateResidualCloseness(matrix: number[][]): number[] {
+  calculateClosenessCentrality(matrix: number[][]): number[] {
     const n = matrix.length;
     const shortestPaths = this.floydWarshall(matrix);
-    const residualCloseness = new Array(n).fill(0);
+    const closenessCentrality = new Array(n).fill(0);
 
-    // Her düğüm için residual closeness değerini hesapla
+    // Her düğüm için Closeness Centrality değerini hesapla
     for (let i = 0; i < n; i++) {
       let sum = 0;
       for (let j = 0; j < n; j++) {
@@ -117,28 +117,28 @@ export const graphAlgorithms = {
           sum += Math.pow(2, -shortestPaths[i][j]);
         }
       }
-      residualCloseness[i] = sum;
+      closenessCentrality[i] = sum;
     }
 
-    return residualCloseness;
+    return closenessCentrality;
   },
 
   /**
-   * Residual Closeness değerlerini normalize eder (0-1 aralığına)
-   * @param values Residual Closeness değerleri
+   * Closeness Centrality değerlerini normalize eder (0-1 aralığına)
+   * @param values Closeness Centrality değerleri
    * @returns Normalize edilmiş değerler
    */
-  normalizeResidualCloseness(values: number[]): number[] {
+  normalizeClosenessCentrality(values: number[]): number[] {
     const max = Math.max(...values);
     return values.map(v => v / max);
   },
 
   /**
-   * Residual Closeness değerlerini okunabilir formata dönüştürür
-   * @param values Residual Closeness değerleri
+   * Closeness Centrality değerlerini okunabilir formata dönüştürür
+   * @param values Closeness Centrality değerleri
    * @returns Formatlanmış değerler
    */
-  formatResidualCloseness(values: number[]): string[] {
+  formatClosenessCentrality(values: number[]): string[] {
     return values.map(v => v.toFixed(4));
   }
 }; 
