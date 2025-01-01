@@ -5,6 +5,7 @@ interface GraphVisualizationProps {
   matrix: number[][];
   isDirected: boolean;
   isWeighted: boolean;
+  nodeLabels?: string[];
 }
 
 interface Node {
@@ -20,11 +21,16 @@ interface Link {
   isSelfLoop?: boolean;
 }
 
-export function GraphVisualization({ matrix, isDirected, isWeighted }: GraphVisualizationProps) {
+export function GraphVisualization({ 
+  matrix, 
+  isDirected, 
+  isWeighted,
+  nodeLabels 
+}: GraphVisualizationProps) {
   const graphData = useMemo(() => {
     const nodes: Node[] = matrix.map((_, index) => ({
       id: index.toString(),
-      label: (index + 1).toString(),
+      label: nodeLabels ? nodeLabels[index] : (index + 1).toString(),
     }));
 
     const links: Link[] = [];
@@ -56,7 +62,7 @@ export function GraphVisualization({ matrix, isDirected, isWeighted }: GraphVisu
     });
 
     return { nodes, links };
-  }, [matrix, isDirected]);
+  }, [matrix, isDirected, nodeLabels]);
 
   return (
     <div className="bg-gray-50 rounded-lg p-4">

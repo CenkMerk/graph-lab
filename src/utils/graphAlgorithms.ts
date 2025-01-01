@@ -196,5 +196,69 @@ export const graphAlgorithms = {
     
     // Minimum Ck toplamını bul
     return Math.min(...ckSums);
+  },
+
+  /**
+   * Grafın kenarlarını listeler
+   * @param matrix Komşuluk matrisi
+   * @param isDirected Grafın yönlü olup olmadığı
+   * @returns Kenar listesi
+   */
+  getEdges(matrix: number[][], isDirected: boolean): { source: number; target: number }[] {
+    const edges: { source: number; target: number }[] = [];
+    const n = matrix.length;
+
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        if (matrix[i][j] > 0) {
+          // Yönsüz grafta her kenarı sadece bir kez ekle
+          if (!isDirected && i > j) continue;
+          edges.push({ source: i, target: j });
+        }
+      }
+    }
+
+    return edges;
+  },
+
+  /**
+   * Line grafın komşuluk matrisini hesaplar
+   * @param matrix Orijinal grafın komşuluk matrisi
+   * @param isDirected Grafın yönlü olup olmadığı
+   * @returns Line grafın komşuluk matrisi ve kenar etiketleri
+   */
+  calculateLineGraph(matrix: number[][], isDirected: boolean): {
+    matrix: number[][];
+    edgeLabels: string[];
+  } {
+    // Orijinal graftaki kenarları bul
+    const edges = this.getEdges(matrix, isDirected);
+    const n = edges.length;
+
+    // Line graf için boş matris oluştur
+    const lineMatrix = Array(n).fill(0).map(() => Array(n).fill(0));
+    
+    // Kenar etiketlerini oluştur
+    const edgeLabels = edges.map(e => `${e.source + 1}-${e.target + 1}`);
+
+    // Her kenar çifti için bağlantı kontrolü
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        if (i === j) continue;
+
+        const edge1 = edges[i];
+        const edge2 = edges[j];
+
+        // İki kenar ortak bir düğüm paylaşıyorsa bağlantı kur
+        if (edge1.source === edge2.source || 
+            edge1.source === edge2.target || 
+            edge1.target === edge2.source || 
+            edge1.target === edge2.target) {
+          lineMatrix[i][j] = 1;
+        }
+      }
+    }
+
+    return { matrix: lineMatrix, edgeLabels };
   }
 }; 

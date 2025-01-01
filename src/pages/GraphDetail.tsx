@@ -10,6 +10,7 @@ import { GraphVisualization } from "../components/graph-detail/GraphVisualizatio
 import { ShortestPathsView } from "../components/graph-detail/ShortestPathsView";
 import { ClosenessCentralityView } from "../components/graph-detail/ClosenessCentralityView";
 import { ResidualClosenessView } from "../components/graph-detail/ResidualClosenessView";
+import { LineGraphView } from "../components/graph-detail/LineGraphView";
 
 export function GraphDetail() {
   const { graphId } = useParams();
@@ -188,6 +189,12 @@ export function GraphDetail() {
               <ResidualClosenessView
                 matrix={displayGraph.matrix}
                 name={displayGraph.name}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <LineGraphView
+                matrix={displayGraph.matrix}
+                isDirected={displayGraph.isDirected}
               />
             </div>
           </>
