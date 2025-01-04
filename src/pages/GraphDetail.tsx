@@ -8,7 +8,7 @@ import { ShortestPathsView } from "../components/graph-detail/ShortestPathsView"
 import { ClosenessCentralityView } from "../components/graph-detail/ClosenessCentralityView";
 import { ResidualClosenessView } from "../components/graph-detail/ResidualClosenessView";
 import { LineGraphView } from "../components/graph-detail/LineGraphView";
-import { TotalGraphView } from "../components/graph-detail/TotalGraphView";
+import { TotalGraphVariations } from "../components/graph-detail/TotalGraphVariations";
 import { ComplementGraphView } from "../components/graph-detail/ComplementGraphView";
 
 interface GraphDetailProps {
@@ -161,7 +161,7 @@ export function GraphDetail({ graph: initialGraph, onSave, editable = false }: G
               />
             </div>
             <div className="md:col-span-2">
-              <TotalGraphView
+              <TotalGraphVariations
                 matrix={displayGraph.matrix}
                 isDirected={displayGraph.isDirected}
                 isWeighted={displayGraph.isWeighted}
