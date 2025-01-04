@@ -9,7 +9,6 @@ import { ClosenessCentralityView } from "../components/graph-detail/ClosenessCen
 import { ResidualClosenessView } from "../components/graph-detail/ResidualClosenessView";
 import { LineGraphView } from "../components/graph-detail/LineGraphView";
 import { TotalGraphView } from "../components/graph-detail/TotalGraphView";
-import { ComplementGraphsView } from "../components/graph-detail/ComplementGraphsView";
 
 interface GraphDetailProps {
   graph: Graph;
@@ -165,14 +164,6 @@ export function GraphDetail({ graph: initialGraph, onSave, editable = false }: G
                 matrix={displayGraph.matrix}
                 isDirected={displayGraph.isDirected}
                 isWeighted={displayGraph.isWeighted}
-              />
-            </div>
-            <div className="md:col-span-2">
-              <ComplementGraphsView
-                matrix={displayGraph.matrix}
-                isDirected={displayGraph.isDirected}
-                isWeighted={displayGraph.isWeighted}
-                allowSelfLoops={displayGraph.allowSelfLoops}
               />
             </div>
           </>
