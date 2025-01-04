@@ -260,5 +260,33 @@ export const graphAlgorithms = {
     }
 
     return { matrix: lineMatrix, edgeLabels };
+  },
+
+  /**
+   * Grafın tümleyenini hesaplar
+   * @param matrix Komşuluk matrisi
+   * @param allowSelfLoops Kendi kendine bağlantılara izin verilip verilmediği
+   * @returns Tümleyen grafın komşuluk matrisi
+   */
+  calculateComplement(matrix: number[][], allowSelfLoops: boolean): number[][] {
+    const n = matrix.length;
+    const complement = Array(n).fill(0).map(() => Array(n).fill(1));
+
+    // Her hücreyi kontrol et
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        // Eğer orijinal grafta kenar varsa, tümleyende olmamalı
+        if (matrix[i][j] > 0) {
+          complement[i][j] = 0;
+        }
+        
+        // Köşegen elemanları (self-loops)
+        if (i === j) {
+          complement[i][j] = allowSelfLoops ? (matrix[i][j] > 0 ? 0 : 1) : 0;
+        }
+      }
+    }
+
+    return complement;
   }
 }; 
