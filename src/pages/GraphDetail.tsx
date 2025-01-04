@@ -8,6 +8,7 @@ import { ShortestPathsView } from "../components/graph-detail/ShortestPathsView"
 import { ClosenessCentralityView } from "../components/graph-detail/ClosenessCentralityView";
 import { ResidualClosenessView } from "../components/graph-detail/ResidualClosenessView";
 import { LineGraphView } from "../components/graph-detail/LineGraphView";
+import { TotalGraphView } from "../components/graph-detail/TotalGraphView";
 
 interface GraphDetailProps {
   graph: Graph;
@@ -156,6 +157,13 @@ export function GraphDetail({ graph: initialGraph, onSave, editable = false }: G
               <LineGraphView
                 matrix={displayGraph.matrix}
                 isDirected={displayGraph.isDirected}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <TotalGraphView
+                matrix={displayGraph.matrix}
+                isDirected={displayGraph.isDirected}
+                isWeighted={displayGraph.isWeighted}
               />
             </div>
           </>
